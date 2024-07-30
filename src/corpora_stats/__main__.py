@@ -6,15 +6,21 @@ from xopen import xopen
 from typing import Tuple
 from dataclasses import dataclass, field
 import dataclasses_json
-from dataclasses_json import dataclass_json
+from dataclasses_json import config
 from math import sqrt
 
 
 @dataclass
 class Stats(dataclasses_json.DataClassJsonMixin):
-    n: int = 0
+    n: int = field(
+        default_factory=int,
+        metadata=config(exclude=lambda x: True),
+    )
     sum: int = 0
-    sum_square: int = 0
+    sum_square: int = field(
+        default_factory=int,
+        metadata=config(exclude=lambda x: True),
+    )
     min: int = sys.maxsize
     max: int = 0
 
@@ -26,6 +32,17 @@ class Stats(dataclasses_json.DataClassJsonMixin):
             self.min = x
         if x > self.max:
             self.max = x
+
+    def __iadd__(self, other: "Stats") -> "Stats":
+        self.n += other.n
+        self.sum += other.sum
+        self.sum_square += other.sum_square
+        if other.min < self.min:
+            self.min = other.min
+        if other.max > self.max:
+            self.max = other.max
+
+        return self
 
     @property
     def mean(self) -> float:
@@ -49,7 +66,7 @@ class Stats(dataclasses_json.DataClassJsonMixin):
         encode_json: bool = False,
     ) -> dict[str, dataclasses_json.core.Json]:
         """
-        override the method in order to add computable properties to JSON
+        Override the method in order to add computable properties to JSON
         https://github.com/lidatong/dataclasses-json/issues/176
         """
 
@@ -63,14 +80,13 @@ class Stats(dataclasses_json.DataClassJsonMixin):
         return data
 
 
-@dataclass_json
 @dataclass
-class Document:
+class Document(dataclasses_json.DataClassJsonMixin):
     filename: str
     char_count: Stats = field(default_factory=Stats)
     unicode_count: Stats = field(default_factory=Stats)
     word_count: Stats = field(default_factory=Stats)
-    line_count = 0
+    line_count: int = 0
 
     def update(self, line: str):
         self.line_count += 1
@@ -79,10 +95,34 @@ class Document:
         self.word_count.update(len(line.split()))
 
     def __str__(self) -> str:
-        return f"{self.line_count=}{self.char_count=}{self.unicode_count=}{self.word_count=}"
+        return f"{self.line_count=}\n{self.char_count=}\n{self.unicode_count=}\n{self.word_count=}"
 
     def __repr__(self) -> str:
         return str(self)
+
+    def __iadd__(self, other: "Document") -> "Document":
+        self.line_count += other.line_count
+        self.char_count += other.char_count
+        self.unicode_count += other.unicode_count
+        self.word_count += other.word_count
+
+        return self
+
+
+@dataclass
+class AllDocuments(dataclasses_json.DataClassJsonMixin):
+    char_count: Stats = field(default_factory=Stats)
+    unicode_count: Stats = field(default_factory=Stats)
+    word_count: Stats = field(default_factory=Stats)
+    line_count: Stats = field(default_factory=Stats)
+
+    def __iadd__(self, other: "Document") -> "AllDocuments":
+        self.line_count.update(other.line_count)
+        self.char_count += other.char_count
+        self.unicode_count += other.unicode_count
+        self.word_count += other.word_count
+
+        return self
 
 
 @click.command()
@@ -90,17 +130,20 @@ class Document:
 def wc(
     files: Tuple[str],
 ):
-    line_per_doc = Stats()
+    # line_per_doc: Stats = Stats()
+    all_docs: AllDocuments = AllDocuments()
     for filename in files:
         with xopen(filename) as cin:
             doc = Document(filename)
             for line in cin:
                 doc.update(line)
-            line_per_doc.update(doc.line_count)
+            # line_per_doc.update(doc.line_count)
+            all_docs += doc
 
         print(doc.to_json())
 
-    print(line_per_doc.to_json())
+    # print(line_per_doc.to_json())
+    print(all_docs.to_json())
 
 
 if __name__ == "__main__":
