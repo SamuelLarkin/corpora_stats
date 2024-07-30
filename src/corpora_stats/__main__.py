@@ -83,44 +83,44 @@ class Stats(dataclasses_json.DataClassJsonMixin):
 @dataclass
 class Document(dataclasses_json.DataClassJsonMixin):
     filename: str
-    char_count: Stats = field(default_factory=Stats)
-    unicode_count: Stats = field(default_factory=Stats)
-    word_count: Stats = field(default_factory=Stats)
-    line_count: int = 0
+    bytes: Stats = field(default_factory=Stats)
+    char: Stats = field(default_factory=Stats)
+    word: Stats = field(default_factory=Stats)
+    line: int = 0
 
     def update(self, line: str):
-        self.line_count += 1
-        self.char_count.update(len(line.encode("utf-8")))
-        self.unicode_count.update(len(line))
-        self.word_count.update(len(line.split()))
+        self.line += 1
+        self.bytes.update(len(line.encode("utf-8")))
+        self.char.update(len(line))
+        self.word.update(len(line.split()))
 
     def __str__(self) -> str:
-        return f"{self.line_count=}\n{self.char_count=}\n{self.unicode_count=}\n{self.word_count=}"
+        return f"{self.line=}\n{self.bytes=}\n{self.char=}\n{self.word=}"
 
     def __repr__(self) -> str:
         return str(self)
 
     def __iadd__(self, other: "Document") -> "Document":
-        self.line_count += other.line_count
-        self.char_count += other.char_count
-        self.unicode_count += other.unicode_count
-        self.word_count += other.word_count
+        self.line += other.line
+        self.bytes += other.bytes
+        self.char += other.char
+        self.word += other.word
 
         return self
 
 
 @dataclass
 class AllDocuments(dataclasses_json.DataClassJsonMixin):
-    char_count: Stats = field(default_factory=Stats)
-    unicode_count: Stats = field(default_factory=Stats)
-    word_count: Stats = field(default_factory=Stats)
-    line_count: Stats = field(default_factory=Stats)
+    bytes: Stats = field(default_factory=Stats)
+    char: Stats = field(default_factory=Stats)
+    word: Stats = field(default_factory=Stats)
+    line: Stats = field(default_factory=Stats)
 
     def __iadd__(self, other: "Document") -> "AllDocuments":
-        self.line_count.update(other.line_count)
-        self.char_count += other.char_count
-        self.unicode_count += other.unicode_count
-        self.word_count += other.word_count
+        self.line.update(other.line)
+        self.bytes += other.bytes
+        self.char += other.char
+        self.word += other.word
 
         return self
 
