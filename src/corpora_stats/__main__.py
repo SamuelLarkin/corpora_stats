@@ -80,6 +80,9 @@ class Stats(dataclasses_json.DataClassJsonMixin):
         return data
 
 
+dataclasses_json.cfg.global_config.encoders[Stats] = lambda stats: stats.to_dict()
+
+
 @dataclass
 class Document(dataclasses_json.DataClassJsonMixin):
     filename: str
@@ -130,19 +133,16 @@ class AllDocuments(dataclasses_json.DataClassJsonMixin):
 def wc(
     files: Tuple[str],
 ):
-    # line_per_doc: Stats = Stats()
     all_docs: AllDocuments = AllDocuments()
     for filename in files:
         with xopen(filename) as cin:
             doc = Document(filename)
             for line in cin:
                 doc.update(line)
-            # line_per_doc.update(doc.line_count)
             all_docs += doc
 
         print(doc.to_json())
 
-    # print(line_per_doc.to_json())
     print(all_docs.to_json())
 
 
