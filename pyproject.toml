@@ -54,7 +54,7 @@ classifiers = [
   "Topic :: System :: Shells",
   "Typing :: Typed",
 ]
-dependencies = ["click", "xopen"]
+dependencies = ["click", "dataclasses-json", "xopen"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -62,7 +62,7 @@ dev = ["build", "mypy", "types-tqdm", "pandas-stubs", "types-tabulate"]
 debug = ["pudb"]
 
 [project.scripts]
-score-tool = "corpora_stats.__main__:wc"
+corpora_stats = "corpora_stats.__main__:wc"
 
 [project.urls]
 repository = "https://git.res.nrc.gc.ca/larkins/score-tool"
