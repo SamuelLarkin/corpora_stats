@@ -9,6 +9,7 @@ import dataclasses_json
 from dataclasses_json import config
 from math import sqrt
 from multiprocessing import Pool
+from tabulate import tabulate
 
 
 @dataclass
@@ -95,10 +96,10 @@ class Document(dataclasses_json.DataClassJsonMixin):
     """
 
     filename: str
+    line: int = 0  # We want the line count to appear next to the file name.
     bytes: Stats = field(default_factory=Stats)
     char: Stats = field(default_factory=Stats)
     word: Stats = field(default_factory=Stats)
-    line: int = 0
 
     def update(self, line: str):
         self.line += 1
@@ -127,10 +128,10 @@ class AllDocuments(dataclasses_json.DataClassJsonMixin):
     A class to handle the overall document statistics.
     """
 
+    line: Stats = field(default_factory=Stats)
     bytes: Stats = field(default_factory=Stats)
     char: Stats = field(default_factory=Stats)
     word: Stats = field(default_factory=Stats)
-    line: Stats = field(default_factory=Stats)
 
     def __iadd__(self, other: "Document") -> "AllDocuments":
         self.line.update(other.line)
@@ -155,19 +156,67 @@ def create_document(filename: str) -> Document:
 
 @click.command()
 @click.argument("files", nargs=-1)
+@click.option(
+    "-j",
+    "--json",
+    "do_json",
+    type=bool,
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help="output in json",
+)
+@click.option(
+    "-f",
+    "--tablefmt",
+    "tablefmt",
+    type=str,
+    default="github",
+    show_default=True,
+    help="Table format (latex, github)",
+)
 def wc(
     files: Tuple[str],
+    do_json: bool,
+    tablefmt: str,
 ):
     """
     Claculates minimum, maximum, sum, mean & sdev for bytes, chars, words & line per document and an overall for all documents.
     """
+    json_indent: int = 2
     all_docs: AllDocuments = AllDocuments()
+    docs = []
     with Pool() as pool:
         for doc in pool.imap(create_document, files):
             all_docs += doc
-            print(doc.to_json())
+            docs.append(doc)
+            if do_json:
+                print(doc.to_json(indent=json_indent))
 
-    print(all_docs.to_json())
+    if do_json:
+        print(all_docs.to_json(indent=json_indent))
+    else:
+        data = {
+            "line": [doc.line for doc in docs],
+            "filename": [doc.filename for doc in docs],
+        }
+        for unit in ("bytes", "char", "word"):
+            for metric in ("sum", "min", "max", "mean", "sdev"):
+                data[f"{unit}_{metric}"] = [
+                    getattr(getattr(doc, unit), metric) for doc in docs
+                ]
+        print(tabulate(data, headers=data.keys(), tablefmt=tablefmt), "\n")
+
+        all_docs = all_docs.to_dict()
+        data = [[k] + list(v.values()) for k, v in all_docs.items()]
+        print(
+            tabulate(
+                data,
+                headers=["OVERALL"] + list(all_docs["bytes"].keys()),
+                floatfmt="0.2f",
+                tablefmt=tablefmt,
+            )
+        )
 
 
 if __name__ == "__main__":

@@ -54,7 +54,7 @@ classifiers = [
   "Topic :: System :: Shells",
   "Typing :: Typed",
 ]
-dependencies = ["click", "dataclasses-json", "xopen"]
+dependencies = ["click", "dataclasses-json", "tabulate", "xopen"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
