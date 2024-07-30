@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "corpora_stats"
+authors = [{ name = "Samuel Larkin", email = "Samuel.Larkin@cnrc-nrc.gc.ca" }]
+description = "A tool to get corpora stats"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = ["NLP", "CLI"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Environment :: MacOS X",
+  "Environment :: Other Environment",
+  "Environment :: Win32 (MS Windows)",
+  "Environment :: X11 Applications",
+  "Framework :: IPython",
+  "Framework :: Jupyter",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Other Audience",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: MS-DOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: Microsoft",
+  "Operating System :: POSIX :: BSD :: FreeBSD",
+  "Operating System :: POSIX :: BSD",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: POSIX :: SunOS/Solaris",
+  "Operating System :: POSIX",
+  "Operating System :: Unix",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation",
+  "Programming Language :: Python",
+  "Programming Language :: Unix Shell",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: System :: Installation/Setup",
+  "Topic :: Terminals",
+  "Topic :: System :: Shells",
+  "Topic :: Utilities",
+  "Topic :: Software Development :: User Interfaces",
+  "Topic :: Software Development :: User Interfaces",
+  "Topic :: System :: Shells",
+  "Typing :: Typed",
+]
+dependencies = ["click", "xopen"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = ["build", "mypy", "types-tqdm", "pandas-stubs", "types-tabulate"]
+debug = ["pudb"]
+
+[project.scripts]
+score-tool = "corpora_stats.__main__:wc"
+
+[project.urls]
+repository = "https://git.res.nrc.gc.ca/larkins/score-tool"
+
+[tool.mypy]
+files = "src"
