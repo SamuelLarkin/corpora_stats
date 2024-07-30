@@ -12,6 +12,10 @@ from math import sqrt
 
 @dataclass
 class Stats(dataclasses_json.DataClassJsonMixin):
+    """
+    Class to cumulate number to generate minimum, maximum, sum, mean & sdev.
+    """
+
     n: int = field(
         default_factory=int,
         metadata=config(exclude=lambda x: True),
@@ -85,6 +89,10 @@ dataclasses_json.cfg.global_config.encoders[Stats] = lambda stats: stats.to_dict
 
 @dataclass
 class Document(dataclasses_json.DataClassJsonMixin):
+    """
+    Per document byte, char, word & line Statistics.
+    """
+
     filename: str
     bytes: Stats = field(default_factory=Stats)
     char: Stats = field(default_factory=Stats)
@@ -114,6 +122,10 @@ class Document(dataclasses_json.DataClassJsonMixin):
 
 @dataclass
 class AllDocuments(dataclasses_json.DataClassJsonMixin):
+    """
+    A class to handle the overall document statistics.
+    """
+
     bytes: Stats = field(default_factory=Stats)
     char: Stats = field(default_factory=Stats)
     word: Stats = field(default_factory=Stats)
@@ -133,6 +145,9 @@ class AllDocuments(dataclasses_json.DataClassJsonMixin):
 def wc(
     files: Tuple[str],
 ):
+    """
+    Claculates minimum, maximum, sum, mean & sdev for bytes, chars, words & line per document and an overall for all documents.
+    """
     all_docs: AllDocuments = AllDocuments()
     for filename in files:
         with xopen(filename) as cin:
