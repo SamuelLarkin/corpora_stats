@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 import dataclasses_json
 from dataclasses_json import config
 from math import sqrt
+from multiprocessing import Pool
 
 
 @dataclass
@@ -140,6 +141,18 @@ class AllDocuments(dataclasses_json.DataClassJsonMixin):
         return self
 
 
+def create_document(filename: str) -> Document:
+    """
+    Helper function to process documents in parallel.
+    """
+    with xopen(filename) as cin:
+        doc = Document(filename)
+        for line in cin:
+            doc.update(line)
+
+    return doc
+
+
 @click.command()
 @click.argument("files", nargs=-1)
 def wc(
@@ -149,14 +162,10 @@ def wc(
     Claculates minimum, maximum, sum, mean & sdev for bytes, chars, words & line per document and an overall for all documents.
     """
     all_docs: AllDocuments = AllDocuments()
-    for filename in files:
-        with xopen(filename) as cin:
-            doc = Document(filename)
-            for line in cin:
-                doc.update(line)
+    with Pool() as pool:
+        for doc in pool.imap(create_document, files):
             all_docs += doc
-
-        print(doc.to_json())
+            print(doc.to_json())
 
     print(all_docs.to_json())
 
