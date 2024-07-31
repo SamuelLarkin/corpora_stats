@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass, field
 from math import sqrt
 from multiprocessing import Pool
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 import click
 import dataclasses_json
@@ -220,36 +220,54 @@ def wc(
     if do_json:
         print(overall.to_json(indent=json_indent))
     else:
-        data = {
-            "line": [doc.line for doc in docs],
-            "filename": [doc.filename for doc in docs],
-        }
-        for unit in ("byte", "char", "word"):
-            for metric in ("sum", "min", "max", "mean", "sdev"):
-                data[f"{unit}_{metric}"] = [
-                    getattr(getattr(doc, unit), metric) for doc in docs
-                ]
-        print(tabulate_ext(data, headers=data.keys(), tablefmt=tablefmt), "\n")
+        tabulate(all_docs)
 
-        all_docs = all_docs.to_dict()
-        data = [[k] + list(v.values()) for k, v in all_docs.items()]
-        print(
-            tabulate_ext(
-                data,
-                headers=["OVERALL"] + list(all_docs["bytes"].keys()),
-                floatfmt="0.2f",
-                tablefmt=tablefmt,
-            )
+
+def tabulate(
+    docs: List[Document],
+    all_docs: AllDocuments,
+    tablefmt="github",
+):
+    """
+    Helpers function to tabulate.
+    """
+    data = {
+        "line": [doc.line for doc in docs],
+        "filename": [doc.filename for doc in docs],
+    }
+    for unit in ("byte", "char", "word"):
+        for metric in ("sum", "min", "max", "mean", "sdev"):
+            data[f"{unit}_{metric}"] = [
+                getattr(getattr(doc, unit), metric) for doc in docs
+            ]
+    print(tabulate_ext(data, headers=data.keys(), tablefmt=tablefmt), "\n")
+
+    all_docs = all_docs.to_dict()
+    data = [[k] + list(v.values()) for k, v in all_docs.items()]
+    print(
+        tabulate_ext(
+            data,
+            headers=["OVERALL"] + list(all_docs["bytes"].keys()),
+            floatfmt="0.2f",
+            tablefmt=tablefmt,
         )
     )
 
 
-@cli.command()
-def test():
+@cli.command("tabulate")
+@click.argument("json_statistics", type=click.File(mode="rt"))
+def tabulate_cli(json_statistics):
     """
-    TEST
+    Given a json file containing corpus statistics, tabulate the metrics.
     """
     print("TABULATING")
+    statistics = json_statistics.readlines()
+    print(statistics)
+    docs = [Document.from_json(data) for data in statistics[:-1]]
+    all_docs = AllDocuments.from_json(statistics[-1])
+    print(docs)
+    print(all_docs)
+    tabulate(docs, all_docs)
 
 
 if __name__ == "__main__":
