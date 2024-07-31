@@ -4,14 +4,17 @@ import sys
 from dataclasses import dataclass, field
 from math import sqrt
 from multiprocessing import Pool
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Type, TypeVar
 
 import click
 import dataclasses_json
 from click_default_group import DefaultGroup
 from dataclasses_json import config
+from dataclasses_json.core import Json
 from tabulate import tabulate as tabulate_ext
 from xopen import xopen
+
+A = TypeVar("A", bound="DataClassJsonMixin")
 
 
 @dataclass
@@ -87,10 +90,23 @@ class Stats(dataclasses_json.DataClassJsonMixin):
 
         return data
 
+    @classmethod
+    def from_dict(cls: Type[A], kvs: Json, *, infer_missing=False) -> A:
+        a = super().from_dict(kvs, infer_missing=infer_missing)
+        mean = float(kvs["mean"])
+        sdev = float(kvs["sdev"])
+        a.n = int(a.sum / mean)
+        a.sum_square = int(sdev * sdev * (a.n - 1) + (a.sum * a.sum / a.n))
+
+        return a
+
 
 # [dataclasses_json extensions](https://github.com/lidatong/dataclasses-json?tab=readme-ov-file#extending)
 # Specifying a custom encoder for Stats.
 dataclasses_json.cfg.global_config.encoders[Stats] = lambda stats: stats.to_dict()
+dataclasses_json.cfg.global_config.decoders[Stats] = lambda stats: Stats.from_dict(
+    stats
+)
 
 
 @dataclass
@@ -268,6 +284,9 @@ def tabulate_cli(json_statistics):
     print(docs)
     print(all_docs)
     tabulate(docs, all_docs)
+    import json
+
+    print(Stats.from_dict(json.loads(statistics[0])["char"]))
 
 
 if __name__ == "__main__":
