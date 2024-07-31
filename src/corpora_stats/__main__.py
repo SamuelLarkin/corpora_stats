@@ -220,12 +220,12 @@ def wc(
     if do_json:
         print(overall.to_json(indent=json_indent))
     else:
-        tabulate(all_docs)
+        tabulate(docs, overall, tablefmt)
 
 
 def tabulate(
     docs: List[Document],
-    all_docs: AllDocuments,
+    overall: AllDocuments,
     tablefmt="github",
 ):
     """
@@ -242,7 +242,7 @@ def tabulate(
             ]
     print(tabulate_ext(data, headers=data.keys(), tablefmt=tablefmt), "\n")
 
-    all_docs = all_docs.to_dict()
+    all_docs = overall.to_dict()
     data = [[k] + list(v.values()) for k, v in all_docs.items()]
     print(
         tabulate_ext(
