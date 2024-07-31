@@ -41,6 +41,37 @@ copora-stats \
 | char    | 2661330 | 2     | 1121  | 77.06    | 92.52   |
 | word    | 403866  | 1     | 173   | 11.69    | 15.62   |
 
+### Latex
+
+```sh
+copora-stats \
+  --tablefmt=latex \
+  OPUS-elrc_euipo_2017-v1-eng-spa.eng.gz \
+  OPUS-qed-v2.0a-jpn-zho.jpn.gz
+```
+
+```latex
+\begin{tabular}{rlrrrrrrrrrrrrrrr}
+\hline
+   line & filename                                 &   byte\_sum &   byte\_min &   byte\_max &   byte\_mean &   byte\_sdev &   char\_sum &   char\_min &   char\_max &   char\_mean &   char\_sdev &   word\_sum &   word\_min &   word\_max &   word\_mean &   word\_sdev \\
+\hline
+  16439 & OPUS-elrc\_euipo\_2017-v1-eng-spa.eng.gz &    2346756 &          3 &       1153 &    142.755  &     99.7559 &    2335033 &          3 &       1121 &    142.042  &    99.1905  &     377445 &          1 &        173 &    22.9603  &   16.4108   \\
+  18098 & OPUS-qed-v2.0a-jpn-zho.jpn.gz          &     908633 &          3 &        262 &     50.2063 &     24.7079 &     326297 &          2 &         98 &     18.0295 &     8.74576 &      26421 &          1 &         14 &     1.45989 &    0.898058 \\
+\hline
+\end{tabular}
+
+\begin{tabular}{lrrrrr}
+\hline
+ OVERALL   &     sum &   min &   max &     mean &    sdev \\
+\hline
+ line      &   34537 & 16439 & 18098 & 17268.50 & 1173.09 \\
+ bytes     & 3255389 &     3 &  1153 &    94.26 &   84.81 \\
+ char      & 2661330 &     2 &  1121 &    77.06 &   92.52 \\
+ word      &  403866 &     1 &   173 &    11.69 &   15.62 \\
+\hline
+\end{tabular}
+```
+
 ### json
 
 ```sh
@@ -132,35 +163,4 @@ copora-stats \
     "sdev": 15.617674254706742
   }
 }
-```
-
-### Latex
-
-```sh
-copora-stats \
-  --tablefmt=latex \
-  OPUS-elrc_euipo_2017-v1-eng-spa.eng.gz \
-  OPUS-qed-v2.0a-jpn-zho.jpn.gz
-```
-
-```latex
-\begin{tabular}{rlrrrrrrrrrrrrrrr}
-\hline
-   line & filename                                 &   byte\_sum &   byte\_min &   byte\_max &   byte\_mean &   byte\_sdev &   char\_sum &   char\_min &   char\_max &   char\_mean &   char\_sdev &   word\_sum &   word\_min &   word\_max &   word\_mean &   word\_sdev \\
-\hline
-  16439 & OPUS-elrc\_euipo\_2017-v1-eng-spa.eng.gz &    2346756 &          3 &       1153 &    142.755  &     99.7559 &    2335033 &          3 &       1121 &    142.042  &    99.1905  &     377445 &          1 &        173 &    22.9603  &   16.4108   \\
-  18098 & OPUS-qed-v2.0a-jpn-zho.jpn.gz          &     908633 &          3 &        262 &     50.2063 &     24.7079 &     326297 &          2 &         98 &     18.0295 &     8.74576 &      26421 &          1 &         14 &     1.45989 &    0.898058 \\
-\hline
-\end{tabular}
-
-\begin{tabular}{lrrrrr}
-\hline
- OVERALL   &     sum &   min &   max &     mean &    sdev \\
-\hline
- line      &   34537 & 16439 & 18098 & 17268.50 & 1173.09 \\
- bytes     & 3255389 &     3 &  1153 &    94.26 &   84.81 \\
- char      & 2661330 &     2 &  1121 &    77.06 &   92.52 \\
- word      &  403866 &     1 &   173 &    11.69 &   15.62 \\
-\hline
-\end{tabular}
 ```
