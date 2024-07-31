@@ -276,17 +276,10 @@ def tabulate_cli(json_statistics):
     """
     Given a json file containing corpus statistics, tabulate the metrics.
     """
-    print("TABULATING")
     statistics = json_statistics.readlines()
-    print(statistics)
     docs = [Document.from_json(data) for data in statistics[:-1]]
     all_docs = AllDocuments.from_json(statistics[-1])
-    print(docs)
-    print(all_docs)
     tabulate(docs, all_docs)
-    import json
-
-    print(Stats.from_dict(json.loads(statistics[0])["char"]))
 
 
 if __name__ == "__main__":
