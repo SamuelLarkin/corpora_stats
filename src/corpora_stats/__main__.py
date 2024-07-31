@@ -149,7 +149,7 @@ def create_document(filename: str) -> Document:
     """
     Helper function to process documents in parallel.
     """
-    with xopen(filename) as cin:
+    with xopen(filename, mode="rt") as cin:
         doc = Document(filename)
         for line in cin:
             doc.update(line)
