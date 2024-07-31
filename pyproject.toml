@@ -58,7 +58,15 @@ dependencies = ["click", "dataclasses-json", "tabulate", "xopen"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-dev = ["build", "mypy", "types-tqdm", "pandas-stubs", "types-tabulate"]
+dev = [
+  "build",
+  "isort",
+  "mypy",
+  "pandas-stubs",
+  "ruff",
+  "types-tabulate",
+  "types-tqdm",
+]
 debug = ["pudb"]
 
 [project.scripts]
