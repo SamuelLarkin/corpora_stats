@@ -8,8 +8,9 @@ from typing import Optional, Tuple
 
 import click
 import dataclasses_json
+from click_default_group import DefaultGroup
 from dataclasses_json import config
-from tabulate import tabulate
+from tabulate import tabulate as tabulate_ext
 from xopen import xopen
 
 
@@ -157,7 +158,12 @@ def create_document(filename: str) -> Document:
     return doc
 
 
-@click.command()
+@click.group(cls=DefaultGroup, default="wc", default_if_no_args=True)
+def cli():
+    pass
+
+
+@cli.command()
 @click.argument("files", nargs=-1)
 @click.option(
     "-j",
@@ -223,12 +229,12 @@ def wc(
                 data[f"{unit}_{metric}"] = [
                     getattr(getattr(doc, unit), metric) for doc in docs
                 ]
-        print(tabulate(data, headers=data.keys(), tablefmt=tablefmt), "\n")
+        print(tabulate_ext(data, headers=data.keys(), tablefmt=tablefmt), "\n")
 
         all_docs = all_docs.to_dict()
         data = [[k] + list(v.values()) for k, v in all_docs.items()]
         print(
-            tabulate(
+            tabulate_ext(
                 data,
                 headers=["OVERALL"] + list(all_docs["bytes"].keys()),
                 floatfmt="0.2f",
@@ -237,5 +243,13 @@ def wc(
         )
 
 
+@cli.command()
+def test():
+    """
+    TEST
+    """
+    print("TABULATING")
+
+
 if __name__ == "__main__":
-    wc()
+    cli()
