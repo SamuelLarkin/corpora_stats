@@ -54,7 +54,7 @@ class Stats(dataclasses_json.DataClassJsonMixin):
 
     @property
     def mean(self) -> float:
-        return float(self.sum) / self.n if self.n >= 0 else 0.0
+        return float(self.sum) / self.n if self.n > 0 else 0.0
 
     @property
     def variance(self) -> float:
@@ -208,24 +208,24 @@ def wc(
     | head -n -1 \\
     | mlr --ijson --opprint --barred cat
     """
-    all_docs: AllDocuments = AllDocuments()
+    overall: AllDocuments = AllDocuments()
     docs = []
     with Pool() as pool:
         for doc in pool.imap(create_document, files):
-            all_docs += doc
+            overall += doc
             docs.append(doc)
             if do_json:
                 print(doc.to_json(indent=json_indent))
 
     if do_json:
-        print(all_docs.to_json(indent=json_indent))
+        print(overall.to_json(indent=json_indent))
     else:
-        tabulate(all_docs)
+        tabulate(docs, overall, tablefmt)
 
 
 def tabulate(
     docs: List[Document],
-    all_docs: AllDocuments,
+    overall: AllDocuments,
     tablefmt="github",
 ):
     """
@@ -242,7 +242,7 @@ def tabulate(
             ]
     print(tabulate_ext(data, headers=data.keys(), tablefmt=tablefmt), "\n")
 
-    all_docs = all_docs.to_dict()
+    all_docs = overall.to_dict()
     data = [[k] + list(v.values()) for k, v in all_docs.items()]
     print(
         tabulate_ext(
