@@ -9,7 +9,7 @@ from typing import Optional, Tuple
 import click
 import dataclasses_json
 from dataclasses_json import config
-from tabulate import tabulate
+from tabulate import tabulate as tabulate_ext
 from xopen import xopen
 
 
@@ -202,39 +202,50 @@ def wc(
     | head -n -1 \\
     | mlr --ijson --opprint --barred cat
     """
-    all_docs: AllDocuments = AllDocuments()
+    overall: AllDocuments = AllDocuments()
     docs = []
     with Pool() as pool:
         for doc in pool.imap(create_document, files):
-            all_docs += doc
+            overall += doc
             docs.append(doc)
             if do_json:
                 print(doc.to_json(indent=json_indent))
 
     if do_json:
-        print(all_docs.to_json(indent=json_indent))
+        print(overall.to_json(indent=json_indent))
     else:
-        data = {
-            "line": [doc.line for doc in docs],
-            "filename": [doc.filename for doc in docs],
-        }
-        for unit in ("byte", "char", "word"):
-            for metric in ("sum", "min", "max", "mean", "sdev"):
-                data[f"{unit}_{metric}"] = [
-                    getattr(getattr(doc, unit), metric) for doc in docs
-                ]
-        print(tabulate(data, headers=data.keys(), tablefmt=tablefmt), "\n")
+        tabulate(docs, overall, tablefmt)
 
-        all_docs = all_docs.to_dict()
-        data = [[k] + list(v.values()) for k, v in all_docs.items()]
-        print(
-            tabulate(
-                data,
-                headers=["OVERALL"] + list(all_docs["bytes"].keys()),
-                floatfmt="0.2f",
-                tablefmt=tablefmt,
-            )
+
+def tabulate(
+    docs: list[Document],
+    overall: AllDocuments,
+    tablefmt="github",
+):
+    """
+    Helpers function to tabulate.
+    """
+    data = {
+        "line": [doc.line for doc in docs],
+        "filename": [doc.filename for doc in docs],
+    }
+    for unit in ("byte", "char", "word"):
+        for metric in ("sum", "min", "max", "mean", "sdev"):
+            data[f"{unit}_{metric}"] = [
+                getattr(getattr(doc, unit), metric) for doc in docs
+            ]
+    print(tabulate_ext(data, headers=data.keys(), tablefmt=tablefmt), "\n")
+
+    all_docs = overall.to_dict()
+    data = [[k] + list(v.values()) for k, v in all_docs.items()]
+    print(
+        tabulate_ext(
+            data,
+            headers=["OVERALL"] + list(all_docs["bytes"].keys()),
+            floatfmt="0.2f",
+            tablefmt=tablefmt,
         )
+    )
 
 
 if __name__ == "__main__":
