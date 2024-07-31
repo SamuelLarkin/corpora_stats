@@ -87,6 +87,8 @@ class Stats(dataclasses_json.DataClassJsonMixin):
         return data
 
 
+# [dataclasses_json extensions](https://github.com/lidatong/dataclasses-json?tab=readme-ov-file#extending)
+# Specifying a custom encoder for Stats.
 dataclasses_json.cfg.global_config.encoders[Stats] = lambda stats: stats.to_dict()
 
 
@@ -182,7 +184,13 @@ def wc(
     tablefmt: str,
 ):
     """
-    Claculates minimum, maximum, sum, mean & sdev for bytes, chars, words & line per document and an overall for all documents.
+    Calculates minimum, maximum, sum, mean & sdev for bytes, chars, words &
+    line per document and an overall for all documents.
+
+    \b
+    corpora-stats --json MY_CORPORA \\
+    | head -n -1 \\
+    | mlr --ijson --opprint --barred cat
     """
     json_indent: int = 2
     all_docs: AllDocuments = AllDocuments()
