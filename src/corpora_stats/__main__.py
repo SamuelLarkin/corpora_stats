@@ -53,7 +53,7 @@ class Stats(dataclasses_json.DataClassJsonMixin):
 
     @property
     def mean(self) -> float:
-        return float(self.sum) / self.n if self.n >= 0 else 0.0
+        return float(self.sum) / self.n if self.n > 0 else 0.0
 
     @property
     def variance(self) -> float:
