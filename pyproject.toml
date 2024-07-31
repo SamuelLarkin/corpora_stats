@@ -65,7 +65,7 @@ dev = [
 debug = ["pudb"]
 
 [project.scripts]
-corpora-stats = "corpora_stats.__main__:wc"
+corpora-stats = "corpora_stats.__main__:cli"
 
 [project.urls]
 repository = "https://github.com/SamuelLarkin/corpora_stats"
