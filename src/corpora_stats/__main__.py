@@ -178,10 +178,20 @@ def create_document(filename: str) -> Document:
     show_default=True,
     help="Table format (latex, github)",
 )
+@click.option(
+    "-i",
+    "--indent",
+    "json_indent",
+    type=int,
+    default=None,
+    show_default=True,
+    help="json indentation",
+)
 def wc(
     files: Tuple[str],
     do_json: bool,
     tablefmt: str,
+    json_indent: Optional[int],
 ):
     """
     Calculates minimum, maximum, sum, mean & sdev for bytes, chars, words &
@@ -192,7 +202,6 @@ def wc(
     | head -n -1 \\
     | mlr --ijson --opprint --barred cat
     """
-    json_indent: int = 2
     all_docs: AllDocuments = AllDocuments()
     docs = []
     with Pool() as pool:
