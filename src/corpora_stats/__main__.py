@@ -1,15 +1,16 @@
 #!/usr/bin/env  python3
 
-import click
 import sys
-from xopen import xopen
-from typing import Tuple
 from dataclasses import dataclass, field
-import dataclasses_json
-from dataclasses_json import config
 from math import sqrt
 from multiprocessing import Pool
+from typing import Optional, Tuple
+
+import click
+import dataclasses_json
+from dataclasses_json import config
 from tabulate import tabulate
+from xopen import xopen
 
 
 @dataclass
@@ -20,12 +21,12 @@ class Stats(dataclasses_json.DataClassJsonMixin):
 
     n: int = field(
         default_factory=int,
-        metadata=config(exclude=lambda x: True),
+        metadata=config(exclude=lambda _: True),
     )
     sum: int = 0
     sum_square: int = field(
         default_factory=int,
-        metadata=config(exclude=lambda x: True),
+        metadata=config(exclude=lambda _: True),
     )
     min: int = sys.maxsize
     max: int = 0
