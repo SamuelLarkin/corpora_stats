@@ -100,25 +100,25 @@ class Document(dataclasses_json.DataClassJsonMixin):
 
     filename: str
     line: int = 0  # We want the line count to appear next to the file name.
-    bytes: Stats = field(default_factory=Stats)
+    byte: Stats = field(default_factory=Stats)
     char: Stats = field(default_factory=Stats)
     word: Stats = field(default_factory=Stats)
 
-    def update(self, line: str):
+    def update(self, line: bytes):
         self.line += 1
-        self.bytes.update(len(line.encode("utf-8")))
-        self.char.update(len(line))
+        self.byte.update(len(line))
+        self.char.update(len(line.decode("utf-8")))
         self.word.update(len(line.split()))
 
     def __str__(self) -> str:
-        return f"{self.line=}\n{self.bytes=}\n{self.char=}\n{self.word=}"
+        return f"{self.line=}\n{self.byte=}\n{self.char=}\n{self.word=}"
 
     def __repr__(self) -> str:
         return str(self)
 
     def __iadd__(self, other: "Document") -> "Document":
         self.line += other.line
-        self.bytes += other.bytes
+        self.byte += other.byte
         self.char += other.char
         self.word += other.word
 
@@ -138,7 +138,7 @@ class AllDocuments(dataclasses_json.DataClassJsonMixin):
 
     def __iadd__(self, other: "Document") -> "AllDocuments":
         self.line.update(other.line)
-        self.bytes += other.bytes
+        self.bytes += other.byte
         self.char += other.char
         self.word += other.word
 
@@ -149,7 +149,7 @@ def create_document(filename: str) -> Document:
     """
     Helper function to process documents in parallel.
     """
-    with xopen(filename, mode="rt") as cin:
+    with xopen(filename, mode="rb") as cin:
         doc = Document(filename)
         for line in cin:
             doc.update(line)
@@ -218,7 +218,7 @@ def wc(
             "line": [doc.line for doc in docs],
             "filename": [doc.filename for doc in docs],
         }
-        for unit in ("bytes", "char", "word"):
+        for unit in ("byte", "char", "word"):
             for metric in ("sum", "min", "max", "mean", "sdev"):
                 data[f"{unit}_{metric}"] = [
                     getattr(getattr(doc, unit), metric) for doc in docs
