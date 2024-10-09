@@ -24,7 +24,7 @@ python -p pip install -e .[dev]
 ### Table
 
 ```sh
-copora-stats \
+corpora-stats \
   OPUS-elrc_euipo_2017-v1-eng-spa.eng.gz \
   OPUS-qed-v2.0a-jpn-zho.jpn.gz
 ```
@@ -44,7 +44,7 @@ copora-stats \
 ### Latex
 
 ```sh
-copora-stats \
+corpora-stats \
   --tablefmt=latex \
   OPUS-elrc_euipo_2017-v1-eng-spa.eng.gz \
   OPUS-qed-v2.0a-jpn-zho.jpn.gz
@@ -75,7 +75,7 @@ copora-stats \
 ### json
 
 ```sh
-copora-stats \
+corpora-stats \
   --json \
   --indent=2 \
   OPUS-elrc_euipo_2017-v1-eng-spa.eng.gz \
