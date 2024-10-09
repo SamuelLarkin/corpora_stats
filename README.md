@@ -19,6 +19,19 @@ python -m pip install git+https://github.com/SamuelLarkin/corpora_stats
 python -p pip install -e .[dev]
 ```
 
+### One file
+
+[PyInstaller Manual](https://pyinstaller.org/en/stable/index.html)
+Install `corpora-stats` as a one binary file.
+
+```sh
+python -m venv venv
+source venv/bin/activate ""
+python -m pip install .[install]
+pyinstaller --onefile venv/bin/corpora-stats
+install dist/corpora-stats ~/.local/bin/
+```
+
 ## Examples
 
 ### Table
