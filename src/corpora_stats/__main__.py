@@ -30,12 +30,21 @@ def cli():
 )
 @click.option(
     "-f",
-    "--tablefmt",
+    "--format",
     "tablefmt",
     type=str,
     default="github",
     show_default=True,
     help="Table format (latex, github)",
+)
+@click.option(
+    "-F",
+    "--float",
+    "floatfmt",
+    type=str,
+    default=".4f",
+    show_default=True,
+    help="float format",
 )
 @click.option(
     "-i",
@@ -50,6 +59,7 @@ def wc(
     files: Tuple[str],
     do_json: bool,
     tablefmt: str,
+    floatfmt: str,
     json_indent: Optional[int],
 ):
     """
@@ -61,6 +71,11 @@ def wc(
     | head -n -1 \\
     | mlr --ijson --opprint --barred cat
     """
+    if do_json:
+        from json import encoder
+
+        encoder.FLOAT_REPR = lambda o: format(o, floatfmt)
+
     overall: AllDocuments = AllDocuments()
     docs = []
     with Pool() as pool:
@@ -78,14 +93,40 @@ def wc(
 
 @cli.command("tabulate")
 @click.argument("json_statistics", type=click.File(mode="rt"))
-def tabulate_cli(json_statistics):
+@click.option(
+    "-f",
+    "--format",
+    "tablefmt",
+    type=str,
+    default="github",
+    show_default=True,
+    help="Table format (latex, github)",
+)
+@click.option(
+    "-F",
+    "--float",
+    "floatfmt",
+    type=str,
+    default=".4f",
+    show_default=True,
+    help="float format",
+)
+def tabulate_cli(
+    json_statistics,
+    tablefmt: str,
+    floatfmt: str,
+):
     """
     Given a json file containing corpus statistics, tabulate the metrics.
     """
+    from json import encoder
+
+    encoder.FLOAT_REPR = lambda o: format(o, floatfmt)
+
     statistics = json_statistics.readlines()
     docs = [Document.from_json(data) for data in statistics[:-1]]
     all_docs = AllDocuments.from_json(statistics[-1])
-    tabulate(docs, all_docs)
+    tabulate(docs, all_docs, tablefmt=tablefmt, floatfmt=floatfmt)
 
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ def tabulate(
         tabulate_ext(
             data,
             headers=["OVERALL"] + list(all_docs["bytes"].keys()),
-            floatfmt="0.2f",
+            floatfmt=floatfmt,
             tablefmt=tablefmt,
         )
     )
