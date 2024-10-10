@@ -1,6 +1,7 @@
 #!/usr/bin/env  python3
 
-from threading import Pool
+# from multiprocessing.pool import ThreadPool as Pool  # At least x2 slower.
+from multiprocessing import Pool
 from typing import Optional, Tuple
 
 import click
