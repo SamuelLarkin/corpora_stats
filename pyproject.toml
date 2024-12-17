@@ -63,7 +63,7 @@ dev = [
   "types-tqdm",
 ]
 debug = ["pudb"]
-installer = ["pyinstaller"]
+install = ["pyinstaller"]
 
 [project.scripts]
 corpora-stats = "corpora_stats.__main__:cli"
