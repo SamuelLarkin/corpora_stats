@@ -32,6 +32,14 @@ pyinstaller --onefile venv/bin/corpora-stats
 install dist/corpora-stats ~/.local/bin/
 ```
 
+```sh
+uv venv --relocatable --python 3.12 venv
+source venv/bin/activate ""
+uv pip install .[install]
+pyinstaller --onefile venv/bin/corpora-stats
+install dist/corpora-stats ~/.local/bin/
+```
+
 ## Examples
 
 ### Table
