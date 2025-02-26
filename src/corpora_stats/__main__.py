@@ -56,12 +56,20 @@ def cli():
     show_default=True,
     help="json indentation",
 )
+@click.option(
+    "-m",
+    "--metric",
+    "do_extra_metrics",
+    is_flag=True,
+    help="Also add min, max, mean, sdev",
+)
 def wc(
     files: Tuple[str],
     do_json: bool,
     tablefmt: str,
     floatfmt: str,
     json_indent: Optional[int],
+    do_extra_metrics: bool,
 ):
     """
     Calculates minimum, maximum, sum, mean & sdev for bytes, chars, words &
@@ -89,7 +97,13 @@ def wc(
     if do_json:
         print(overall.to_json(indent=json_indent))
     else:
-        tabulate(docs, overall, tablefmt=tablefmt, floatfmt=floatfmt)
+        tabulate(
+            docs,
+            overall,
+            tablefmt=tablefmt,
+            floatfmt=floatfmt,
+            do_extra_metrics=do_extra_metrics,
+        )
 
 
 @cli.command("tabulate")

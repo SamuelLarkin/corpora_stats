@@ -24,27 +24,37 @@ def tabulate(
     overall: AllDocuments,
     tablefmt="github",
     floatfmt=".4f",
+    do_extra_metrics: bool = False,
 ):
     """
     Helpers function to tabulate.
     """
+    metrics = (
+        ("total", "min", "max", "mean", "sdev") if do_extra_metrics else ("total",)
+    )
     data = {
         "line": [doc.line for doc in docs],
         "filename": [doc.filename for doc in docs],
     }
     doc_dicts = [doc.to_dict() for doc in docs]
     for unit in ("byte", "char", "word"):
-        for metric in ("total", "min", "max", "mean", "sdev"):
-            data[f"{unit}_{metric}"] = [doc[unit][metric] for doc in doc_dicts]
+        if do_extra_metrics:
+            for metric in metrics:
+                data[f"{unit}_{metric}"] = [doc[unit][metric] for doc in doc_dicts]
+        else:
+            data[f"{unit}"] = [doc[unit]["total"] for doc in doc_dicts]
 
-    print(tabulate_ext(data, headers=data.keys(), tablefmt=tablefmt), "\n")
+    print(tabulate_ext(data, headers=list(data.keys()), tablefmt=tablefmt), "\n")
 
     all_docs = overall.to_dict()
-    data = [[k] + list(v.values()) for k, v in all_docs.items()]
+    footer_data = [
+        [filename] + [document[metric] for metric in metrics]
+        for filename, document in all_docs.items()
+    ]
     print(
         tabulate_ext(
-            data,
-            headers=["OVERALL"] + list(all_docs["bytes"].keys()),
+            footer_data,
+            headers=["OVERALL"] + list(metrics),
             floatfmt=floatfmt,
             tablefmt=tablefmt,
         )
