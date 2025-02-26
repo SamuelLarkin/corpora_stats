@@ -1,22 +1,31 @@
 # corpora-stats
 
-A CLI tool to calculate _count_, _min_, _max_, _mean_, _sdev_ for _bytes_, _chars_, _words_ & _lines_ for corpus files.
+A CLI tool to calculate _count_, _min_, _max_, _mean_, _sdev_ for _bytes_, _chars_, _words_ & _lines_ for corpora files.
 
 ## Install
 
+Create a virtual environment.
+
 ```sh
-python -m venv venv
+uv venv --relocatable --python=3.12 --prompt=corpora-stats venv
+```
+
+Activate the newly created environment.
+
+```sh
 source venv/bin/activate ""
 ```
 
+Install the version from github.
+
 ```sh
-python -m pip install git+https://github.com/SamuelLarkin/corpora_stats
+uv pip install git+https://github.com/SamuelLarkin/corpora_stats
 ```
 
 ### Development
 
 ```sh
-python -p pip install -e .[dev]
+uv pip install -e .[dev]
 ```
 
 ### One file
@@ -24,18 +33,15 @@ python -p pip install -e .[dev]
 [PyInstaller Manual](https://pyinstaller.org/en/stable/index.html)
 Install `corpora-stats` as a one binary file.
 
-```sh
-python -m venv venv
-source venv/bin/activate ""
-python -m pip install .[install]
-pyinstaller --onefile venv/bin/corpora-stats
-install dist/corpora-stats ~/.local/bin/
-```
+First install the required tools to package python files in a single executable bundle.
 
 ```sh
-uv venv --relocatable --python 3.12 venv
-source venv/bin/activate ""
-uv pip install .[install]
+uv pip install -e .[install]
+```
+
+Create the single file and install it.
+
+```sh
 pyinstaller --onefile venv/bin/corpora-stats
 install dist/corpora-stats ~/.local/bin/
 ```
