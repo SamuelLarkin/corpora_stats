@@ -34,7 +34,7 @@ def tabulate(
     }
     doc_dicts = [doc.to_dict() for doc in docs]
     for unit in ("byte", "char", "word"):
-        for metric in ("sum", "min", "max", "mean", "sdev"):
+        for metric in ("total", "min", "max", "mean", "sdev"):
             data[f"{unit}_{metric}"] = [doc[unit][metric] for doc in doc_dicts]
 
     print(tabulate_ext(data, headers=data.keys(), tablefmt=tablefmt), "\n")

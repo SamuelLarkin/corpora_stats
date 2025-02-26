@@ -78,6 +78,8 @@ class Stats(dataclasses_json.DataClassJsonMixin):
         data = super().to_dict(encode_json=encode_json)
         # NOTE: min can be None but we would like it to show as 0.
         data["min"] = data["min"] or 0
+        data["total"] = data["sum"]
+        del data["sum"]
 
         # then manually set computable properties
         data["mean"] = self.mean
