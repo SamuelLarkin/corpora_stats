@@ -1,4 +1,3 @@
-import sys
 from dataclasses import dataclass, field
 from math import sqrt
 from typing import Type, TypeVar
@@ -25,14 +24,14 @@ class Stats(dataclasses_json.DataClassJsonMixin):
         default_factory=int,
         metadata=config(exclude=lambda _: True),
     )
-    min: int = sys.maxsize
+    min: int | None = None
     max: int = 0
 
     def update(self, x: int):
         self.n += 1
         self.sum += x
         self.sum_square += x * x
-        if x < self.min:
+        if self.min is None or x < self.min:
             self.min = x
         if x > self.max:
             self.max = x
@@ -41,8 +40,9 @@ class Stats(dataclasses_json.DataClassJsonMixin):
         self.n += other.n
         self.sum += other.sum
         self.sum_square += other.sum_square
-        if other.min < self.min:
-            self.min = other.min
+        if other.min is not None:
+            if self.min is None or other.min < self.min:
+                self.min = other.min
         if other.max > self.max:
             self.max = other.max
 
@@ -76,6 +76,8 @@ class Stats(dataclasses_json.DataClassJsonMixin):
 
         # first call the parent method to get non-computable properties
         data = super().to_dict(encode_json=encode_json)
+        # NOTE: min can be None but we would like it to show as 0.
+        data["min"] = data["min"] or 0
 
         # then manually set computable properties
         data["mean"] = self.mean

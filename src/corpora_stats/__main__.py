@@ -75,7 +75,7 @@ def wc(
     if do_json:
         from json import encoder
 
-        encoder.FLOAT_REPR = lambda o: format(o, floatfmt)
+        encoder.FLOAT_REPR = lambda o: 0 if o is None else format(o, floatfmt)
 
     overall: AllDocuments = AllDocuments()
     docs = []
