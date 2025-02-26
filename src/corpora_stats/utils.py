@@ -30,7 +30,7 @@ def tabulate(
     Helpers function to tabulate.
     """
     metrics = (
-        ("total", "min", "max", "mean", "sdev") if do_extra_metrics else ("total",)
+        ("count", "min", "max", "mean", "sdev") if do_extra_metrics else ("count",)
     )
     data = {
         "line": [doc.line for doc in docs],
@@ -42,7 +42,7 @@ def tabulate(
             for metric in metrics:
                 data[f"{unit}_{metric}"] = [doc[unit][metric] for doc in doc_dicts]
         else:
-            data[f"{unit}"] = [doc[unit]["total"] for doc in doc_dicts]
+            data[f"{unit}"] = [doc[unit]["count"] for doc in doc_dicts]
 
     print(tabulate_ext(data, headers=list(data.keys()), tablefmt=tablefmt), "\n")
 
